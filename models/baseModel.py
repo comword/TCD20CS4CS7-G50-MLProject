@@ -8,11 +8,13 @@ class BaseModel:
     Base class for all models
     """
     model = None
+    configs: dict
 
     @abstractmethod
     def __init__(self, *model_params, **configs):
         # model_params are used to initialise the sklearn model 
         # configs are used to configure options outside the sklearn model
+        self.configs = configs
         raise NotImplementedError
 
     def initSKModel(self, skModel, args, kwargs):

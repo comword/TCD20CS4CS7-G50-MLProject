@@ -1,2 +1,2 @@
 from .baseModel import BaseModel
-from .linears import LRWithPoly
+from .linears import LinRegWithPoly, RidgeRegCVWithPoly, LassoCVWithPoly
