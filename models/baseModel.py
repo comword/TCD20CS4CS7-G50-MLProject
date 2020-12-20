@@ -9,6 +9,7 @@ class BaseModel:
     """
     model = None
     configs: dict
+    metrics: dict[str, float] = dict()
 
     @abstractmethod
     def __init__(self, *model_params, **configs):
@@ -19,7 +20,10 @@ class BaseModel:
 
     def initSKModel(self, skModel, args, kwargs):
         # forward configs to the sklearn model
-        sig = inspect.signature(skModel.__init__)
+        if inspect.isclass(skModel):
+            sig = inspect.signature(skModel.__init__)
+        else:
+            sig = inspect.signature(skModel)
         sk_params = sig.parameters.keys()
         forward_args = dict()
         for arg in kwargs.keys():
