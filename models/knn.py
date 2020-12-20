@@ -8,7 +8,7 @@ from sklearn.model_selection import GridSearchCV
 
 class KNNRegressor(BaseModel):
     # n_neighbors: Number of neighbors to use
-    # n_neighbors_range: the auto search range of n_neighbors (default: np.arange(4, 15))
+    # n_neighbors_range: the auto search range of n_neighbors (default: np.arange(1, 15))
     # kfold: folds number (default=5)
 
     model: GridSearchCV
@@ -22,7 +22,7 @@ class KNNRegressor(BaseModel):
         assert self.model
         if "n_neighbors" not in self.configs:
             self.hyper_parm_grid.append({
-                "n_neighbors": self.configs.get("n_neighbors_range", np.arange(4, 15))
+                "n_neighbors": self.configs.get("n_neighbors_range", np.arange(1, 15))
                 })
             self.model = GridSearchCV(self.model, self.hyper_parm_grid,
                 cv=self.configs.get("kfold", 5), scoring='neg_mean_squared_error')
@@ -33,4 +33,4 @@ class KNNRegressor(BaseModel):
         for scorer in ["neg_mean_squared_error",
                        "neg_root_mean_squared_error", "r2"]:
             self.metrics["val_"+scorer] = SCORERS[scorer](self.model, X_test, y_test)
-        return self.metrics["val_neg_mean_squared_error"], self.metrics
+        return self.metrics["val_r2"], self.metrics

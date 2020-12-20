@@ -22,7 +22,7 @@ class DecTreeReg(BaseModel):
         for scorer in ["neg_mean_squared_error",
                        "neg_root_mean_squared_error", "r2"]:
             self.metrics["val_"+scorer] = SCORERS[scorer](self.model, X_test, y_test)
-        return self.metrics["val_neg_mean_squared_error"], self.metrics
+        return self.metrics["val_r2"], self.metrics
 
 class RandomForestReg(DecTreeReg):
     model: RandomForestRegressor
