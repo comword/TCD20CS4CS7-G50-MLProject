@@ -153,7 +153,7 @@ class CombinedDataSelector:
         self.daArray = daArray
 
     def Construct(self):
-        for itemi in range(self.daArray):
+        for itemi in self.daArray:
             cloned = list(self.daArray)
             cloned.remove(itemi)
             selected = []
