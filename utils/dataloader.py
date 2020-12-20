@@ -161,6 +161,13 @@ class CombinedDataSelector:
                 selected.extend(v.metrics)
             yield (selected, itemi)
 
+    def ConstructNoFilter(self):
+        cloned = list(self.daArray)
+        selected = []
+        for v in cloned:
+            selected.extend(v.metrics)
+        return selected
+
 
 def TrainingPipeline(daArray, conn, model):
     cds = CombinedDataSelector(daArray)
