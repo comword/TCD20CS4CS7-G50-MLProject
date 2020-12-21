@@ -59,3 +59,7 @@ class LassoCVWithPoly(LinRegWithPoly):
             return Pipeline([('poly', PolynomialFeatures(degree)),
                              ('model', LassoCV(alphas=alphas, **kwargs))])
         self.initSKModel(get_pipeline, model_params, configs)
+
+# Classifications
+
+from sklearn.linear_model import LogisticRegressionCV

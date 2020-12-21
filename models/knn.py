@@ -12,7 +12,7 @@ class KNNRegressor(BaseModel):
     # kfold: folds number (default=5)
 
     model: GridSearchCV
-    hyper_parm_grid = list()
+    hyper_parm_grid = [dict()]
 
     def __init__(self, *model_params, **configs):
         self.configs = configs
@@ -21,9 +21,8 @@ class KNNRegressor(BaseModel):
     def fit(self, X: np.ndarray, y: np.ndarray):
         assert self.model
         if "n_neighbors" not in self.configs:
-            self.hyper_parm_grid.append({
-                "n_neighbors": self.configs.get("n_neighbors_range", np.arange(1, 15))
-                })
+            self.hyper_parm_grid[0]["n_neighbors"] = self.configs.get("n_neighbors_range", np.arange(1, 15))
+        if len(self.hyper_parm_grid[0]) != 0:
             self.model = GridSearchCV(self.model, self.hyper_parm_grid,
                 cv=self.configs.get("kfold", 5), scoring='neg_mean_squared_error')
         return self.model.fit(X, y)
