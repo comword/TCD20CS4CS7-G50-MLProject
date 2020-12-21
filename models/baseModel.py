@@ -21,8 +21,10 @@ class BaseModel:
     def __init__(self, *model_params, **configs):
         # model_params are used to initialise the sklearn model 
         # configs are used to configure options outside the sklearn model
+        self.model = None
         self.configs = configs
-        raise NotImplementedError
+        self.metrics = dict()
+        self.hyper_parm_grid = [dict()]
 
     def initSKModel(self, skModel, args, kwargs):
         # forward configs to the sklearn model
@@ -38,11 +40,15 @@ class BaseModel:
         self.model = skModel(*args, **forward_args)
 
     def fit(self, X: np.ndarray, y: np.ndarray):
-        assert self.model
+        assert self.model is not None
         if len(self.hyper_parm_grid[0]) != 0:
+            if not self.is_classification:
+                scoring=self.configs.get("scoring", 'neg_mean_squared_error')
+            else:
+                scoring=self.configs.get("scoring", 'accuracy')
             self.model = GridSearchCV(self.model, self.hyper_parm_grid,
                 cv=self.configs.get("kfold", 5), 
-                scoring=self.configs.get("scoring", 'neg_mean_squared_error'))
+                scoring=scoring)
         fit_result = self.model.fit(X, y)
         if isinstance(self.model, GridSearchCV):
             # boundary warning
@@ -57,15 +63,17 @@ class BaseModel:
     def evaluate(self, X_test: np.ndarray,
         y_test: np.ndarray) -> tuple[float, dict[str, float]]:
 
-        assert self.model
+        assert self.model is not None
         if not self.is_classification:
             for scorer in ["neg_mean_squared_error",
                         "neg_root_mean_squared_error", "r2"]:
                 self.metrics["val_"+scorer] = SCORERS[scorer](self.model, X_test, y_test)
             return self.metrics["val_r2"], self.metrics
         else:
-            
-            return 0, self.metrics
+            for scorer in ["accuracy",
+                        "roc_auc", "average_precision"]:
+                self.metrics["val_"+scorer] = SCORERS[scorer](self.model, X_test, y_test)
+            return self.metrics["val_roc_auc"], self.metrics
 
     def __getattr__(self, *args):
         if self.model is None:

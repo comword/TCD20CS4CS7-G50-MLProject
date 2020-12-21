@@ -3,9 +3,8 @@ import numpy as np
 
 from . import BaseModel
 from .knn import KNNRegressor
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
 from sklearn.kernel_ridge import KernelRidge as SKKernelRidge
-from sklearn.model_selection import GridSearchCV
 
 def gaussian_kernel_builder(gamma):
     def gaussian_kernel(distances):
@@ -31,6 +30,25 @@ class KNeighborsGaussianRegressor(KNeighborsRegressor):
             self.weights = gaussian_kernel_builder(self.gamma)
         return super().predict(X)
 
+class KNeighborsGaussianClassifier(KNeighborsClassifier):
+    def __init__(self, n_neighbors=5, *, gamma=10, weights=None,
+                 algorithm='auto', leaf_size=30,
+                 p=2, metric='minkowski', metric_params=None, n_jobs=None,
+                 **kwargs):
+        super().__init__(
+            n_neighbors=n_neighbors,
+            algorithm=algorithm,
+            leaf_size=leaf_size, metric=metric, p=p,
+            metric_params=metric_params,
+            n_jobs=n_jobs, **kwargs)
+        self.gamma = gamma
+        self.weights = weights
+
+    def predict(self, X):
+        if(self.weights is None):
+            self.weights = gaussian_kernel_builder(self.gamma)
+        return super().predict(X)
+
 class KNNGaussianKernelReg(KNNRegressor):
     # n_neighbors: Number of neighbors to use
     # n_neighbors_range: the auto search range of n_neighbors (default: np.arange(1, 15))
@@ -39,7 +57,7 @@ class KNNGaussianKernelReg(KNNRegressor):
     # kfold: folds number (default=5)
 
     def __init__(self, *model_params, **configs):
-        self.configs = configs
+        super().__init__(*model_params, **configs)
         self.initSKModel(KNeighborsGaussianRegressor, model_params, configs)
 
     def fit(self, X: np.ndarray, y: np.ndarray):
@@ -49,6 +67,11 @@ class KNNGaussianKernelReg(KNNRegressor):
             self.hyper_parm_grid[0]["gamma"] = self.configs.get("gamma_range", np.logspace(1.8, -1, 10))
         return super().fit(X, y)
 
+class KNNGaussianKernelCls(KNNGaussianKernelReg):
+    is_classification = True
+    def __init__(self, *model_params, **configs):
+        super().__init__(*model_params, **configs)
+        self.initSKModel(KNeighborsGaussianClassifier, model_params, configs)
 class KernelRidge(BaseModel):
     # alpha: Regularization strength
     # alpha_range: default: np.logspace(-3, 0, 10)
@@ -60,7 +83,7 @@ class KernelRidge(BaseModel):
     # kfold: folds number (default=5)
 
     def __init__(self, *model_params, **configs):
-        self.configs = configs
+        super().__init__(*model_params, **configs)
         self.initSKModel(SKKernelRidge, model_params, configs)
 
     def fit(self, X: np.ndarray, y: np.ndarray):

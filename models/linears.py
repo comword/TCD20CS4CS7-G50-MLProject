@@ -13,8 +13,7 @@ class LinRegWithPoly(BaseModel):
     # kfold: folds number (default=5)
 
     def __init__(self, *model_params, **configs):
-        self.configs = configs
-
+        super().__init__(*model_params, **configs)
         def get_pipeline(degree=3, **kwargs):
             return Pipeline([('poly', PolynomialFeatures(degree)),
                              ('model', LinearRegression(**kwargs))])
@@ -45,16 +44,40 @@ class LassoCVWithPoly(LinRegWithPoly):
 
 # Classifications
 
-from sklearn.linear_model import LogisticRegressionCV
+from sklearn.linear_model import LogisticRegression, RidgeClassifierCV
 
-class LogisticWithPoly(BaseModel):
+class LogisticWithPoly(LinRegWithPoly):
+    # C: Each of the values in Cs describes the inverse of regularization strength
+    # C_range: np.logspace(-1, 1, 10)
+    # penalty: 'l1', 'l2'
+    # penalty_range: ['l1', 'l2']
+
     is_classification = True
 
     def __init__(self, *model_params, **configs):
-        self.configs = configs
-
-        def get_pipeline(degree=3, **kwargs):
+        super().__init__(*model_params, **configs)
+        def get_pipeline(degree=3, C=1, penalty='l2', max_iter=100, solver='saga', **kwargs):
             return Pipeline([('poly', PolynomialFeatures(degree)),
-                             ('model', LogisticRegressionCV(**kwargs))])
+                             ('model', LogisticRegression(solver=solver,
+                                C=C, penalty=penalty, max_iter=max_iter, **kwargs))])
+
+        self.initSKModel(get_pipeline, model_params, configs)
+
+    def fit(self, X: np.ndarray, y: np.ndarray):
+        if "C" not in self.configs:
+           self.hyper_parm_grid[0]["model__C"] = self.configs.get("C_range", np.logspace(-1, 2, 10))
+        if "penalty" not in self.configs:
+           self.hyper_parm_grid[0]["model__penalty"] = self.configs.get("penalty_range", ['l1', 'l2'])
+        return super().fit(X, y)
+
+class RidgeClsWithPoly(LinRegWithPoly):
+    # alphas: Array of alpha values to try. Regularization strength; default: [0.1, 1.0, 10.0]
+    is_classification = True
+
+    def __init__(self, *model_params, **configs):
+        super().__init__(*model_params, **configs)
+        def get_pipeline(degree=3, alphas=[0.1, 1.0, 10.0], **kwargs):
+            return Pipeline([('poly', PolynomialFeatures(degree)),
+                             ('model', RidgeClassifierCV(alphas=alphas, **kwargs))])
 
         self.initSKModel(get_pipeline, model_params, configs)
