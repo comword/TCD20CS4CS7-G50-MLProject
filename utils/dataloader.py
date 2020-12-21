@@ -184,3 +184,106 @@ def TrainingPipeline(daArray, conn, model):
         print(itemi.note, Score)
 
 
+class DataFromSelectorW:
+    def __init__(self, dataSelector, yearmin, years, conn):
+        self.dataSelector = dataSelector
+        self.yearmin = yearmin
+        self.years = years  # The window of years
+
+        self.qc = QueryConstructor(self.dataSelector)
+        self.conn = conn
+
+        normalF = []
+        for mat in self.dataSelector.metrics:
+            nf = self.getNormalizeFunction(mat)[0]
+            normalF.append(nf)
+
+        self.normalF = normalF
+
+    def getNormalizeFunction(self, metric):
+        sql = getMaxMinForData(metric)
+
+        maxmin = self.conn.execute(sql).fetchone()
+
+        maxv = maxmin[0]
+        minv = maxmin[1]
+
+        avgv = maxmin[2]
+
+        return Normalize(avgv, maxv - minv)
+
+    def getProsperityIndex(self, gdp1, gdp2):
+        if gdp2 - gdp1 > 0:
+            return pow((gdp2 - gdp1) / gdp1, (1 / self.years))
+        else:
+            return - pow((gdp1 - gdp2) / gdp1, (1 / self.years))
+
+    def getXfromRow(self, row):
+        rawData = row[:-3]
+        normalF = self.normalF
+
+        data = []
+        for item in range(len(rawData)):
+            data.append(normalF[item](rawData[item]))
+        return data
+
+    def getYfromRow(self, row):
+        return AdvEcon().count(row[-3])
+
+        # return (row[-2],row[-1])
+
+    def constructOneYear(self, year, X, Y):
+        sql = self.qc.constructForYear(year)
+        res = self.conn.execute(sql)
+        for data in res:
+            X.append(self.getXfromRow(data))
+            Y.append(self.getYfromRow(data))
+
+    def constructAll(self):
+        X = []
+        Y = []
+
+        for ye in range(self.yearmin, self.yearmin + self.years):
+            self.constructOneYear(ye, X, Y)
+
+        return (X, Y)
+
+
+def AdvEcon():
+    return ["AUS",
+            "AUT",
+            "BEL",
+            "CAN",
+            "CHE",
+            "CYP",
+            "CZE",
+            "DEU",
+            "DNK",
+            "ESP",
+            "EST",
+            "FIN",
+            "FRA",
+            "GRC",
+            "HKG",
+            "IRL",
+            "ISL",
+            "ISR",
+            "ITA",
+            "JPN",
+            "KOR",
+            "LTU",
+            "LUX",
+            "LVA",
+            "MAC",
+            "MLT",
+            "NLD",
+            "NOR",
+            "NZL",
+            "PRI",
+            "PRT",
+            "SGP",
+            "SMR",
+            "SVK",
+            "SVN",
+            "SWE",
+            "USA"]

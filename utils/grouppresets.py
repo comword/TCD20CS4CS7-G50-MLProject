@@ -1,4 +1,4 @@
-from utils.dataloader import DataSelector
+from .dataloader import DataSelector
 
 
 def Groups(year):
@@ -35,41 +35,4 @@ def Groups(year):
     return group
 
 
-def AdvEcon():
-    return ["AUS",
-            "AUT",
-            "BEL",
-            "CAN",
-            "CHE",
-            "CYP",
-            "CZE",
-            "DEU",
-            "DNK",
-            "ESP",
-            "EST",
-            "FIN",
-            "FRA",
-            "GRC",
-            "HKG",
-            "IRL",
-            "ISL",
-            "ISR",
-            "ITA",
-            "JPN",
-            "KOR",
-            "LTU",
-            "LUX",
-            "LVA",
-            "MAC",
-            "MLT",
-            "NLD",
-            "NOR",
-            "NZL",
-            "PRI",
-            "PRT",
-            "SGP",
-            "SMR",
-            "SVK",
-            "SVN",
-            "SWE",
-            "USA"]
+
