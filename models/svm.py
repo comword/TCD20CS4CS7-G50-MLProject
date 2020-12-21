@@ -14,7 +14,7 @@ class SVMRegression(BaseModel):
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         if "C" not in self.configs:
-            self.hyper_parm_grid[0]["C"]=self.configs.get("C_range", [0.1, 1, 10])
+            self.hyper_parm_grid[0]["C"]=self.configs.get("C_range", np.logspace(0, 1.5, 10))
         if "epsilon" not in self.configs:
             self.hyper_parm_grid[0]["epsilon"]=self.configs.get("epsilon_range", [0.01, 0.1, 1])
         return super().fit(X, y)
@@ -29,5 +29,5 @@ class SVMClassifier(BaseModel):
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         if "C" not in self.configs:
-            self.hyper_parm_grid[0]["C"]=self.configs.get("C_range", [0.1, 1, 10])
+            self.hyper_parm_grid[0]["C"]=self.configs.get("C_range", np.logspace(0, 1.5, 10))
         return super().fit(X, y)
