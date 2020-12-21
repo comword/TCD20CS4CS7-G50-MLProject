@@ -37,8 +37,6 @@ class KNNGaussianKernelReg(KNNRegressor):
     # gamma: the gamma value for gaussian_kernel
     # gamma_range: the auto search range of gamma (default: np.logspace(2, -1, 10))
     # kfold: folds number (default=5)
-    model: GridSearchCV
-    hyper_parm_grid = [dict()]
 
     def __init__(self, *model_params, **configs):
         self.configs = configs
@@ -50,12 +48,8 @@ class KNNGaussianKernelReg(KNNRegressor):
             self.hyper_parm_grid[0]["n_neighbors"] = self.configs.get("n_neighbors_range", np.arange(1, 15))
         if "gamma" not in self.configs:
             self.hyper_parm_grid[0]["gamma"] = self.configs.get("gamma_range", np.logspace(1.8, -1, 10))
-        if len(self.hyper_parm_grid[0]) != 0:
-            self.model = GridSearchCV(self.model, self.hyper_parm_grid,
-                cv=self.configs.get("kfold", 5), scoring='neg_mean_squared_error')
-        return self.model.fit(X, y)
+        return super().fit(X, y)
 
-    
 class KernelRidge(BaseModel):
     model: GridSearchCV
     hyper_parm_grid = [dict()]

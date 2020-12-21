@@ -17,13 +17,6 @@ class DecTreeReg(BaseModel):
         assert self.model != None
         return self.model.fit(X, y)
 
-    def evaluate(self, X_test, y_test):
-        assert self.model != None
-        for scorer in ["neg_mean_squared_error",
-                       "neg_root_mean_squared_error", "r2"]:
-            self.metrics["val_"+scorer] = SCORERS[scorer](self.model, X_test, y_test)
-        return self.metrics["val_r2"], self.metrics
-
 class RandomForestReg(DecTreeReg):
     model: RandomForestRegressor
 
