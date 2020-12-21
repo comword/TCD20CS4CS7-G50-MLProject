@@ -43,7 +43,16 @@ class BaseModel:
             self.model = GridSearchCV(self.model, self.hyper_parm_grid,
                 cv=self.configs.get("kfold", 5), 
                 scoring=self.configs.get("scoring", 'neg_mean_squared_error'))
-        return self.model.fit(X, y)
+        fit_result = self.model.fit(X, y)
+        if isinstance(self.model, GridSearchCV):
+            # boundary warning
+            model_params = self.model.best_estimator_.get_params()
+            for params_dict in self.hyper_parm_grid:
+                model_params_in_grid = { key: model_params[key] for key in params_dict.keys() }
+                for (k, v) in model_params_in_grid.items():
+                    if v == params_dict[k][0] or v == params_dict[k][-1]:
+                        print("Hyperparameter search is hitting boundary: {} {}".format(k, v))
+        return fit_result
 
     def evaluate(self, X_test: np.ndarray,
         y_test: np.ndarray) -> tuple[float, dict[str, float]]:

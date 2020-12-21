@@ -23,7 +23,7 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = train_test_split(np.array(data[0]),
         np.array(data[1]), test_size=0.1, random_state=42)
 
-    model = LinRegWithPoly(degree_range=[1,2,3])
+    model = LinRegWithPoly(degree_range=[1])
     model.fit(X_train, y_train)
     print(model.evaluate(X_test, y_test))
     print(model.best_estimator_)
