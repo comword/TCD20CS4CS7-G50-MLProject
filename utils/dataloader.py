@@ -182,3 +182,5 @@ def TrainingPipeline(daArray, conn, model):
         modelc.fit(X_train, y_train)
         Score = modelc.evaluate(X_test, y_test)[0]
         print(itemi.note, Score)
+
+
