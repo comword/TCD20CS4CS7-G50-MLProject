@@ -16,14 +16,14 @@ def TrainingPipeline(daArray, conn, model):
     for s in cds.Construct():
         (selected, itemi) = s
         ds = utils.DataSelector(5, selected)
-        dfs = utils.DataFromSelector(ds, 1970, 35, conn)
+        dfs = utils.DataFromSelectorW(ds, 2015, 1, conn)
         datas = dfs.constructAll()
         (X, y) = datas
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
         modelc = model.getNewConsolitedModel()
         modelc.fit(X_train, y_train, X_test, y_test)
         Score = modelc.evaluate(X_test, y_test)[0]
-        print(itemi.note, Score, modelc.name())
+        print( "MODELOUT, ", itemi.note, " , ",Score, " , "  ,modelc.name())
 
 
 class SingleModel:
@@ -47,8 +47,6 @@ class ConsolitedModel:
             model = modeli()
             model.fit(X, y)
             scoresw = model.evaluate(X_test, y_test)[0]
-            scoresw2 = model.evaluate(X, y)[0]
-            print(model.__class__.__name__, ",", scoresw, ",", scoresw2)
             if scoresw > scores:
                 scores = scoresw
                 self.modelselected = model
@@ -62,22 +60,9 @@ class ConsolitedModel:
 
 # from utils import *
 
-def TrainingPipelineA(daArray, conn, model):
-    cds = utils.CombinedDataSelector(daArray)
-
-    selected = cds.ConstructNoFilter()
-    ds = utils.DataSelector(5, selected)
-    dfs = utils.DataFromSelector(ds, 1970, 35, conn)
-    datas = dfs.constructAll()
-    (X, y) = datas
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
-    modelc = model.getNewConsolitedModel()
-    modelc.fit(X_train, y_train, X_test, y_test)
-    Score = modelc.evaluate(X_test, y_test)[0]
-
 
 years = utils.Groups(5)
 
-TrainingPipelineA(years, utils.conn, SingleModel(ConsolitedModel(
-    [RandomForestReg, DecTreeReg, LinRegWithPoly, RidgeRegCVWithPoly, LassoCVWithPoly, KNNGaussianKernelReg,
-     KNNRegressor, KernelRidge, DummyRegressor])))
+TrainingPipeline(years, utils.conn, SingleModel(ConsolitedModel(
+    [RidgeClsWithPoly,LogisticWithPoly,KNNClassifier,SVMClassifier, DecTreeCls,RandomForestCls, DummyClassifier])))
+

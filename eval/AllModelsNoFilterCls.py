@@ -23,7 +23,7 @@ def TrainingPipeline(daArray, conn, model):
         modelc = model.getNewConsolitedModel()
         modelc.fit(X_train, y_train, X_test, y_test)
         Score = modelc.evaluate(X_test, y_test)[0]
-        print(itemi.note, Score, modelc.name())
+        print("MODELOUT , ", itemi.note, " , ", Score, " , ", modelc.name())
 
 
 class SingleModel:
@@ -48,7 +48,7 @@ class ConsolitedModel:
             model.fit(X, y)
             scoresw = model.evaluate(X_test, y_test)[0]
             scoresw2 = model.evaluate(X, y)[0]
-            print(model.__class__.__name__, ",", scoresw, ",", scoresw2)
+            print("MODELOUT , ", model.__class__.__name__, ",", scoresw, " , ", scoresw2)
             if scoresw > scores:
                 scores = scoresw
                 self.modelselected = model
@@ -62,12 +62,12 @@ class ConsolitedModel:
 
 # from utils import *
 
-def TrainingPipelineA(daArray, conn, model):
+def TrainingPipelineW(daArray, conn, model):
     cds = utils.CombinedDataSelector(daArray)
 
     selected = cds.ConstructNoFilter()
     ds = utils.DataSelector(5, selected)
-    dfs = utils.DataFromSelector(ds, 1970, 35, conn)
+    dfs = utils.DataFromSelectorW(ds, 2015, 1, conn)
     datas = dfs.constructAll()
     (X, y) = datas
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
@@ -78,6 +78,5 @@ def TrainingPipelineA(daArray, conn, model):
 
 years = utils.Groups(5)
 
-TrainingPipelineA(years, utils.conn, SingleModel(ConsolitedModel(
-    [RandomForestReg, DecTreeReg, LinRegWithPoly, RidgeRegCVWithPoly, LassoCVWithPoly, KNNGaussianKernelReg,
-     KNNRegressor, KernelRidge, DummyRegressor])))
+TrainingPipelineW(years, utils.conn, SingleModel(ConsolitedModel(
+    [RidgeClsWithPoly, KNNClassifier, LogisticWithPoly, SVMClassifier, DecTreeCls, RandomForestCls, DummyClassifier])))

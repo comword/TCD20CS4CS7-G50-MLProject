@@ -23,7 +23,7 @@ def TrainingPipeline(daArray, conn, model):
         modelc = model.getNewConsolitedModel()
         modelc.fit(X_train, y_train, X_test, y_test)
         Score = modelc.evaluate(X_test, y_test)[0]
-        print(itemi.note, Score, modelc.name())
+        print("MODELOUT, ",itemi.note, " , ", Score, " , ",modelc.name())
 
 
 class SingleModel:
