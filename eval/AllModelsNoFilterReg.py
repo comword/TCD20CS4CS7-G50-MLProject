@@ -70,7 +70,7 @@ def TrainingPipelineA(daArray, conn, model):
     dfs = utils.DataFromSelector(ds, 1970, 35, conn)
     datas = dfs.constructAll()
     (X, y) = datas
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=42)
     modelc = model.getNewConsolitedModel()
     modelc.fit(X_train, y_train, X_test, y_test)
     Score = modelc.evaluate(X_test, y_test)[0]
