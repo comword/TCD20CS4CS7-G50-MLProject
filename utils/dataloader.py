@@ -64,6 +64,12 @@ class QueryConstructor:
         return output
 
 
+NullCounter = 0
+
+def returnCounter():
+    global NullCounter
+    return NullCounter
+
 def Normalize(meanv, minmaxdiffv):
     """
     :param a: Array
@@ -72,8 +78,12 @@ def Normalize(meanv, minmaxdiffv):
     mean = meanv
     maxmindiff = minmaxdiffv
 
+    global NullCounter
+
     def apply(v):
+        global NullCounter
         if v is None:
+            NullCounter += 1
             return 0
         return (v - mean) / maxmindiff
 
