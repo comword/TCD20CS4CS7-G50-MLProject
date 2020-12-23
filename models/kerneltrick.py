@@ -67,11 +67,17 @@ class KNNGaussianKernelReg(KNNRegressor):
             self.hyper_parm_grid[0]["gamma"] = self.configs.get("gamma_range", np.logspace(1.8, -1, 10))
         return super().fit(X, y)
 
+    def name(self) -> str:
+        return "Kernelized kNN Regressor"
+
 class KNNGaussianKernelCls(KNNGaussianKernelReg):
     is_classification = True
     def __init__(self, *model_params, **configs):
         super().__init__(*model_params, **configs)
         self.initSKModel(KNeighborsGaussianClassifier, model_params, configs)
+
+    def name(self) -> str:
+        return "Kernelized kNN Classifier"
 class KernelRidge(BaseModel):
     # alpha: Regularization strength
     # alpha_range: default: np.logspace(-3, 0, 10)
@@ -98,4 +104,5 @@ class KernelRidge(BaseModel):
                 np.logspace(0.1, -1, 10))
         return super().fit(X, y)
 
-    
+    def name(self) -> str:
+        return "Kernel Ridge Regressor"

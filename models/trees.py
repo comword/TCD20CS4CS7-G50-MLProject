@@ -18,6 +18,9 @@ class DecTreeReg(BaseModel):
             self.hyper_parm_grid[0]["max_depth"] = self.configs.get("max_depth_range", np.logspace(0, 2, 10).astype(int))
         return super().fit(X, y)
 
+    def name(self) -> str:
+        return "Decision Tree Regressor"
+
 class RandomForestReg(BaseModel):
     # n_estimators
     # n_estimators_range: np.logspace(1.5, 2.5, 5).astype(int)
@@ -31,6 +34,9 @@ class RandomForestReg(BaseModel):
             self.hyper_parm_grid[0]["n_estimators"] = self.configs.get("n_estimators_range", np.logspace(1.5, 2.5, 5).astype(int))
         return super().fit(X, y)
 
+    def name(self) -> str:
+        return "Random Forest Regressor"
+
 class DecTreeCls(DecTreeReg):
     is_classification = True
 
@@ -38,9 +44,14 @@ class DecTreeCls(DecTreeReg):
         super().__init__(*model_params, **configs)
         self.initSKModel(DecisionTreeClassifier, model_params, configs)
 
+    def name(self) -> str:
+        return "Decision Tree Classifier"
+
 class RandomForestCls(RandomForestReg):
-    model: RandomForestClassifier
 
     def __init__(self, *model_params, **configs):
         super().__init__(*model_params, **configs)
         self.initSKModel(RandomForestClassifier, model_params, configs)
+
+    def name(self) -> str:
+        return "Random Forest Classifier"

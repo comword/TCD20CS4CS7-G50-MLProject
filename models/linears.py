@@ -25,6 +25,9 @@ class LinRegWithPoly(BaseModel):
            self.hyper_parm_grid[0]["poly__degree"] = self.configs.get("degree_range", np.arange(1, 3))
         return super().fit(X, y)
 
+    def name(self) -> str:
+        return "Linear Regression"
+
 from sklearn.linear_model import RidgeCV, LassoCV
 class RidgeRegCVWithPoly(LinRegWithPoly):
     def __init__(self, *model_params, **configs):
@@ -34,6 +37,9 @@ class RidgeRegCVWithPoly(LinRegWithPoly):
                              ('model', RidgeCV(alphas=alphas, **kwargs))])
         self.initSKModel(get_pipeline, model_params, configs)
 
+    def name(self) -> str:
+        return "Ridge Regression"
+
 class LassoCVWithPoly(LinRegWithPoly):
     def __init__(self, *model_params, **configs):
         super().__init__(*model_params, **configs)
@@ -41,6 +47,9 @@ class LassoCVWithPoly(LinRegWithPoly):
             return Pipeline([('poly', PolynomialFeatures(degree)),
                              ('model', LassoCV(alphas=alphas, **kwargs))])
         self.initSKModel(get_pipeline, model_params, configs)
+
+    def name(self) -> str:
+        return "Lasso Regression"
 
 # Classifications
 
@@ -70,6 +79,9 @@ class LogisticWithPoly(LinRegWithPoly):
            self.hyper_parm_grid[0]["model__penalty"] = self.configs.get("penalty_range", ['l1', 'l2'])
         return super().fit(X, y)
 
+    def name(self) -> str:
+        return "Logistic Regression"
+
 class RidgeClsWithPoly(LinRegWithPoly):
     # alphas: Array of alpha values to try. Regularization strength; default: [0.1, 1.0, 10.0]
     is_classification = True
@@ -81,3 +93,6 @@ class RidgeClsWithPoly(LinRegWithPoly):
                              ('model', RidgeClassifierCV(alphas=alphas, **kwargs))])
 
         self.initSKModel(get_pipeline, model_params, configs)
+    
+    def name(self) -> str:
+        return "Ridge Classification"

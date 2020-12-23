@@ -17,6 +17,9 @@ class KNNRegressor(BaseModel):
         if "n_neighbors" not in self.configs:
             self.hyper_parm_grid[0]["n_neighbors"] = self.configs.get("n_neighbors_range", np.arange(1, 15))
         return super().fit(X, y)
+    
+    def name(self) -> str:
+        return "kNN Regressor"
 
 class KNNClassifier(KNNRegressor):
     is_classification = True
@@ -24,3 +27,6 @@ class KNNClassifier(KNNRegressor):
     def __init__(self, *model_params, **configs):
         super().__init__(*model_params, **configs)
         self.initSKModel(KNeighborsClassifier, model_params, configs)
+
+    def name(self) -> str:
+        return "kNN Classifier"
