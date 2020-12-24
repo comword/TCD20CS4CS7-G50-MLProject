@@ -85,3 +85,6 @@ class BaseModel:
             return super().__repr__() + '\nModel repr: {}'.format(self.model.__repr__())
         else:
             return super().__repr__()
+
+    def name(self) -> str:
+        return "Not set"
